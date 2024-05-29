@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>Posisi Tangan</title>
+
+	<!-- Main Styles -->
+	<link rel="stylesheet" href="assets/styles/style-horizontal.min.css">
+
+	<!-- mCustomScrollbar -->
+	<link rel="stylesheet" href="assets/plugin/mCustomScrollbar/jquery.mCustomScrollbar.min.css">
+
+	<!-- Waves Effect -->
+	<link rel="stylesheet" href="assets/plugin/waves/waves.min.css">
+
+	<!-- Sweet Alert -->
+	<link rel="stylesheet" href="assets/plugin/sweet-alert/sweetalert.css">
+
+	<!-- Color Picker -->
+	<link rel="stylesheet" href="assets/color-switcher/color-switcher.min.css">
+</head>
+
+<body>
+	<header class="fixed-header">
+		<div class="header-top">
+			<div class="container">
+				<div class="pull-left">
+					<a href="index.html" class="logo">Posisi Tangan</a>
+				</div>
+				<!-- /.pull-left -->
+				<div class="pull-right">
+
+				</div>
+				<!-- /.pull-right -->
+			</div>
+			<!-- /.container -->
+		</div>
+		<!-- /.header-top -->
+		<nav class="nav-horizontal">
+			<button type="button" class="menu-close hidden-on-desktop js__close_menu"><i
+					class="fa fa-times"></i><span>CLOSE</span></button>
+			<div class="container">
+
+				<ul class="menu">
+					<li>
+						<a href="{{ url_for('index') }}"><i class="ico fa fa-home"></i><span>Posisi Tangan</span></a>
+					</li>
+
+					<!-- /.menu -->
+			</div>
+			<!-- /.container -->
+		</nav>
+		<!-- /.nav-horizontal -->
+	</header>
+	<!-- /.fixed-header -->
+
+	
+
+	<div id="wrapper">
+		<div class="main-content container">
+			<div class="row small-spacing">
+				<div class="col-lg-6 col-md-6 col-xs-12">
+					<div class="box-content card">
+						<h4 class="box-title">Webcam Tangan</h4>
+						<div class="card-content">
+							<img id="video_feed" src="{{ url_for('video_feed') }}" width="100%" height="400px" alt="Video Feed">
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-6 col-md-6 col-xs-12">
+					<div class="box-content card">
+						<h4 class="box-title">Gambar Keterangan</h4>
+						<div class="card-content" id="image_dataset">
+							
+						</div>
+					</div>
+				</div>
+				
+				<div class="col-lg-12 col-md-12 col-xs-12">
+					<div class="box-content card">
+						<h4 class="box-title">Keterangan</h4>
+						<div class="card-content" id="image_dataset">
+							<h5>Posisi : <span id="name" style="font-weight: bold;font-style: italic;"></span></h5>
+							<h6 id="the_keterangan"></h6>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<footer class="footer">
+				<ul class="list-inline">
+					<li>2024 © Rajab.</li>
+					
+				</ul>
+			</footer>
+		</div>
+		<!-- /.main-content -->
+	</div><!--/#wrapper -->
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
+		<script src="assets/script/html5shiv.min.js"></script>
+		<script src="assets/script/respond.min.js"></script>
+	<![endif]-->
+	<!-- 
+	================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="assets/scripts/jquery.min.js"></script>
+	<script src="assets/scripts/modernizr.min.js"></script>
+	<script src="assets/plugin/bootstrap/js/bootstrap.min.js"></script>
+	<script src="assets/plugin/mCustomScrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
+	<script src="assets/plugin/nprogress/nprogress.js"></script>
+	<script src="assets/plugin/sweet-alert/sweetalert.min.js"></script>
+	<script src="assets/plugin/waves/waves.min.js"></script>
+	<!-- Full Screen Plugin -->
+	<script src="assets/plugin/fullscreen/jquery.fullscreen-min.js"></script>
+
+	<script src="assets/scripts/main.min.js"></script>
+	<script src="assets/scripts/horizontal-menu.min.js"></script>
+	<script src="assets/color-switcher/color-switcher.min.js"></script>
+	<script>
+		setInterval(function() {
+        $.ajax({
+				url: 'http://127.0.0.1:5000/get_data',
+				type: 'GET',
+				success: function (data) {
+					// if data == {}
+                    if (data.name) {
+                        // console.log("ada data")
+                        $("#image_dataset").html("");
+
+                        $("#image_dataset").append('<img src="/show_image?image_path=' + data.image_path + '" width="100%" height="400px" alt="image dataset">');
+
+                        $("#name").html(data.name);
+                        $("#the_keterangan").html(data.keterangan);
+
+                    }else{
+                        console.log("tidak ada data")
+                        // remove all
+                        $("#image_dataset").html("");
+
+                        $("#image_dataset").append('<img src="/show_image?image_path=gambar/tutorial.jpg" width="100%" height="400px" alt="image dataset">');
+
+                        $("#name").html("Belum Terdeteksi");
+                        $("#the_keterangan").html("Posisikan satu tangan kepada menunjuk dan tangan lainnya kepada terbuka dan tunjukkan ke arah titik tangan");
+                    }
+				}
+			});
+    },1000)
+	</script>
+</body>
+
+</html>
