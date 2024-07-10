@@ -25,6 +25,19 @@ hands = mp_hands.Hands(static_image_mode=False, max_num_hands=2, min_detection_c
 
 # Initialize MediaPipe drawing utilities
 mp_drawing = mp.solutions.drawing_utils
+drawing_styles = mp.solutions.drawing_styles
+
+# Configure drawing options
+dot_drawing_spec = mp_drawing.DrawingSpec(color=(255, 0, 0), thickness=3, circle_radius=5)
+
+
+def draw_landmarks_no_lines(image, hand_landmarks, landmark_drawing_spec):
+    if not hand_landmarks:
+        return
+    for idx, landmark in enumerate(hand_landmarks.landmark):
+        landmark_px = mp_drawing._normalized_to_pixel_coordinates(landmark.x, landmark.y, image.shape[1], image.shape[0])
+        if landmark_px:
+            cv2.circle(image, landmark_px, landmark_drawing_spec.circle_radius, landmark_drawing_spec.color, landmark_drawing_spec.thickness)
 
 # Initialize camera capture
 cap = cv2.VideoCapture(0)
@@ -98,8 +111,32 @@ def generate_frames(stat):
 
                             distances = [np.sqrt((landmark.x - finger_tip.x) ** 2 +
                                                 (landmark.y - finger_tip.y) ** 2) for landmark in open_palm]
+                            
+                            ############# ini utk kira palm center ##########                            # 
+                            # calculate the finger tip distance from palm center
+                                        # Calculate the Euclidean distance between the finger tip and the palm center
+                            finger_tip_distance = np.sqrt((finger_tip.x - palm_center_x) ** 2 +
+                                                        (finger_tip.y - palm_center_y) ** 2)
+                            
+                            # Set a threshold distance in normalized coordinates
+                            threshold_distance = 0.34
+                            threshold_distance2 = 0.37
 
-                            if distances:
+
+                            # Print the finger tip distance
+                            print(finger_tip_distance)
+
+                            # Check if the finger tip is close to the palm center within the threshold distance
+                            if finger_tip_distance > threshold_distance and finger_tip_distance < threshold_distance2:
+                                the_image_path = all_data[21]["image_path"]
+                                the_name = all_data[21]["name"]
+                                the_keterangan = all_data[21]["keterangan"]
+                                # closest_landmark_name = landmark_names[21]
+                                cv2.putText(frame, f'Closest Landmark: Tengah Telapak Tangan',
+                                            (int(finger_tip.x * w), int(finger_tip.y * h)),
+                                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                            ########## ending palm center ##########
+                            elif distances:
                                 closest_landmark_idx = np.argmin(distances)
                                 # print("ini index", closest_landmark_idx)
 
@@ -118,11 +155,13 @@ def generate_frames(stat):
                                         (0, 0, 255), 2, cv2.LINE_AA)
 
                 # Draw landmarks on the frame
-                mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+                draw_landmarks_no_lines(frame, hand_landmarks, dot_drawing_spec)
         else:
             the_image_path = "gambar/tutorial.jpg"
             the_name = None
             the_keterangan = "Posisikan satu tangan kepada menunjuk dan tangan lainnya kepada terbuka dan tunjukkan ke arah titik tangan"
+
+        
 
         # Convert the frame to bytes
         ret, buffer = cv2.imencode('.jpg', frame)
